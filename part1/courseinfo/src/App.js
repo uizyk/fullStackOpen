@@ -31,7 +31,6 @@ const Part = (props) => {
   );
 }
 
-
 export default function App(){
 
   const course = {
