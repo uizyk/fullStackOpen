@@ -1,6 +1,8 @@
 import { useState } from 'react'
 
 import Person from './components/Person'
+import PersonForm from './components/PersonForm'
+import Filter from './components/Filter'
 
 const App = () => {
 
@@ -10,7 +12,7 @@ const App = () => {
 
   const [newNumber, setNewNumber] = useState('');
 
-  // const [filter, setFilter] = useState(true);
+  const [filter , setFilter] = useState('');
 
   const nameInputChange = (e) => {
     setNewName(e.target.value);
@@ -20,9 +22,18 @@ const App = () => {
     setNewNumber(e.target.value);
   } 
 
-  const existingName = persons.map(person => person.name);
+  const filterInputChange = (e) => {
+    setFilter(e.target.value);
+  }
 
+  const filtered = !filter
+    ? persons
+    : persons.filter((person) => 
+      person.name.toLowerCase().includes(filter.toLowerCase())
+    );
+  
   const addName = (e) => {
+    const existingName = persons.map(person => person.name);
     e.preventDefault();
     const nameObj = {
       name: '',
@@ -41,33 +52,31 @@ const App = () => {
     }
   }
 
-  // console.log(persons);
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addName}>
-        <div>
-          name: <input value={newName} onChange={nameInputChange}/>
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={numberInputChange}/>
-        </div>
-        <div>
-          <button type="submit" onClick={addName}>add</button>
-        </div>
-      </form>
+      <Filter 
+        filter={filter}
+        filterInput={filterInputChange}
+      />
+      <PersonForm 
+        addName={addName}
+        newName={newName}
+        newNumber={newNumber}
+        numberInputChange={numberInputChange}
+        nameInputChange={nameInputChange}
+      />
       <h2>Numbers</h2>
       <ul>
-        {persons.map(person =>
+        {filtered.map(person =>
           <Person 
-          personName={person.name}
-          personNumber={person.number}
-          key={person.name} 
+            personName={person.name}
+            personNumber={person.number}
+            key={person.name} 
           />
         )}
       </ul>
-
     </div>
   )
 }
