@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import Person from './components/Person'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
+import axios from 'axios'
 
 const App = () => {
 
@@ -52,6 +53,14 @@ const App = () => {
     }
   }
 
+  // fetch and set data from json
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        setPersons(response.data);
+      })
+  }, []);
 
   return (
     <div>
