@@ -24,25 +24,23 @@ function App() {
     console.log(e.target.value);
   }
 
+
   const filtered = !filter
   ? countries
   : countries.filter((country) => 
     country.name.common.toLowerCase().includes(filter.toLowerCase())
   );
+  
 
-    
+      return (
+        <div>
+          find countries <input type='text' onChange={filterInputChange}/>
+          <ul>
+              <Country filtered={filtered}/>
+          </ul>
+        </div>
+      )
+  }
 
-  return (
-    <div>
-      find countries <input type='text' onChange={filterInputChange}/>
-      <ul>
-      {filtered.map(country =>
-        <Country countryName={country.name.common} key={country.name.official}/>
-      )}
-      </ul>
-    </div>
-  )
-
-}
 
 export default App;
