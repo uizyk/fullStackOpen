@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Country = ({filtered, input}) => {
+const Country = ({filtered}) => {
 
     if(filtered.length > 11){
         if(filtered.length === 250){
@@ -8,18 +8,20 @@ const Country = ({filtered, input}) => {
                 <p>Type above to find a country</p>
             )
         // }
-        // else if(filtered.length === 0){
-        //     return(
-        //         <p>No results</p>
-        //     )
-        }
-        else {
-            return(
-                <p>Too many matches, specify another filter</p>
+    }
+    else {
+        return(
+            <p>Too many matches, specify another filter</p>
             )
         }
-
-    } else {
+        
+    } 
+    else if(filtered.length === 0){
+        return(
+            <p>No results</p>
+        )
+    }
+    else {
         return(
             filtered.map(country =>            
                 <p key={country.name.official}>{country.name.common}</p>
