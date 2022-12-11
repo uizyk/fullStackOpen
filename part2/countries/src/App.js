@@ -36,7 +36,13 @@ function App() {
         <div>
           find countries <input type='text' onChange={filterInputChange}/>
           <ul>
-              <Country filtered={filtered}/>
+              <Country 
+                filtered={filtered} 
+                area = {filtered.area}
+                // flag={filtered.flags.png}
+                capital={filtered.capital}
+                languages={filtered.languages}
+              />
           </ul>
         </div>
       )
