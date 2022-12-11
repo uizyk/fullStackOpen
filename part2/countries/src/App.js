@@ -36,10 +36,7 @@ function App() {
           <ul>
               <Country 
                 filtered={filtered} 
-                // area = {filtered.area}
-                // flag={filtered.flags}
-                // capital={filtered.capital}
-                // languages={filtered.languages}
+                setFilter={setFilter}
               />
           </ul>
         </div>

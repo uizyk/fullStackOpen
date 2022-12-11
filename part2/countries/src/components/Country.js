@@ -1,7 +1,8 @@
 import React from 'react';
 import Languages from './Languages';
 
-const Country = ({filtered}) => {
+const Country = ({filtered, setFilter}) => {
+
     if(filtered.length > 11){
         if(filtered.length === 250){
             return(
@@ -38,8 +39,15 @@ const Country = ({filtered}) => {
     }
     else {
         return(
-            filtered.map(country =>            
-                <p key={country.name.official}>{country.name.common}</p>
+            filtered.map(country =>
+                <div key={country.name.official}>            
+                    <p class="countryName">
+                        {country.name.common} 
+                        <button onClick={()=> setFilter(country.name.common)}>
+                            show
+                        </button>
+                    </p>
+                </div>
             )
         )
     }
