@@ -14,9 +14,17 @@ function App() {
     })
   }, [])
 
+  // useEffect(() => {
+  //   axios.get('https://openweathermap.org/').then(response =>{
+  //     const weatherData = response.data
+  //     setWeather(weatherData);
+  //   })
+  // }, [])
+
   
   const [countries, setCountries] = useState([]);
   const [filter , setFilter] = useState('');
+  // const [weather, setWeather] = useState([]);
 
   const filterInputChange = (e) => {
     setFilter(e.target.value);

@@ -41,7 +41,7 @@ const Country = ({filtered, setFilter}) => {
         return(
             filtered.map(country =>
                 <div key={country.name.official}>            
-                    <p class="countryName">
+                    <p>
                         {country.name.common} 
                         <button onClick={()=> setFilter(country.name.common)}>
                             show
