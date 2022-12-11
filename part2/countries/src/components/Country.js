@@ -1,7 +1,7 @@
 import React from 'react';
+import Languages from './Languages';
 
-const Country = ({filtered, area, capital, languages}) => {
-
+const Country = ({filtered}) => {
     if(filtered.length > 11){
         if(filtered.length === 250){
             return(
@@ -17,16 +17,17 @@ const Country = ({filtered, area, capital, languages}) => {
         }
             
     } 
-
     else if(filtered.length === 1){
         return(
-            filtered.map(country =>
-            <div key={country.name.official}>
-                <h2>{country.name}</h2>
-                {/* <br/>
-                <p>{country.capital}</p>
-                <p>area: {country.area}</p> */}
-            </div>
+            filtered.map(country =>   
+                <div key={country.name.official}>         
+                    <h2>{country.name.common}</h2>
+                    <p>capital {country.capital}</p>
+                    <p>area {country.area}</p>
+                    <Languages languages={country.languages} />
+                    <br />
+                    <img src={`${country.flags.png}`}/>
+                </div>
             )
         )
     }

@@ -11,7 +11,6 @@ function App() {
     axios.get('https://restcountries.com/v3.1/all').then(response =>{
       const countriesData = response.data
       setCountries(countriesData);
-      console.log(countriesData);
     })
   }, [])
 
@@ -21,7 +20,6 @@ function App() {
 
   const filterInputChange = (e) => {
     setFilter(e.target.value);
-    console.log(e.target.value);
   }
 
 
@@ -38,10 +36,10 @@ function App() {
           <ul>
               <Country 
                 filtered={filtered} 
-                area = {filtered.area}
-                // flag={filtered.flags.png}
-                capital={filtered.capital}
-                languages={filtered.languages}
+                // area = {filtered.area}
+                // flag={filtered.flags}
+                // capital={filtered.capital}
+                // languages={filtered.languages}
               />
           </ul>
         </div>
