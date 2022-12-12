@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import Person from './components/Person'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
-import axios from 'axios'
+import Communication from './components/Communication'
 
 const App = () => {
 
@@ -50,21 +50,26 @@ const App = () => {
       setPersons(persons.concat(nameObj));
       setNewName('');
       setNewNumber('');
-      axios
-        .post('http://localhost:3001/persons', nameObj)
-        .then(response => {
-          console.log(response);
-        })
+      Communication
+        .create(nameObj)
+
+      // axios
+      //   .post('http://localhost:3001/persons', nameObj)
+      //   .then(response => {
+      //     console.log(response);
+      //   })
     }
   }
 
   // fetch and set data from json
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
+
+    Communication
+      .getAll()
       .then(response => {
         setPersons(response.data);
-      })
+    })
+
   }, []);
 
   return (
