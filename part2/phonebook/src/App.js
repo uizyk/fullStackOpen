@@ -42,7 +42,13 @@ const App = () => {
     }
     if (existingName.includes(newName))
     {
-      alert(`${newName} is already added to phonebook`);
+      if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
+        Communication
+          .update(nameObj.name, nameObj)
+          .then(response => {
+            setPersons(response.data)
+          })
+      }
     } else
     {
       nameObj.name = newName;
@@ -52,12 +58,6 @@ const App = () => {
       setNewNumber('');
       Communication
         .create(nameObj)
-
-      // axios
-      //   .post('http://localhost:3001/persons', nameObj)
-      //   .then(response => {
-      //     console.log(response);
-      //   })
     }
   }
 
@@ -78,12 +78,14 @@ const App = () => {
       if (window.confirm(`Do you really want to delete ${person.name}?`)){
         Communication
           .deletePerson(person.id)
-          .then(response => {setPersons(response.data)})
+          .then(response => {
+            Communication.getAll().then(response => {
+              setPersons(response.data)
+            })
+            })
     }
   }
 
-  
-  
 
   return (
     <div>
