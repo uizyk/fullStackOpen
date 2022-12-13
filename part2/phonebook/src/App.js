@@ -71,18 +71,18 @@ const App = () => {
     })
 
   }, []);
-
+  
   // Delete person
-  const deletePerson = (person) => {
 
-    Communication
-      .deletePerson(person.id)
-      .then(response => setPersons(response.data)
-      )
-      
-      // try figure out how to update page without reloading 
-      window.location.reload();
+    const deletePerson = (person) => {
+      if (window.confirm(`Do you really want to delete ${person.name}?`)){
+        Communication
+          .deletePerson(person.id)
+          .then(response => {setPersons(response.data)})
+    }
   }
+
+  
   
 
   return (
