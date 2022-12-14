@@ -16,7 +16,7 @@ const App = () => {
 
   const [filter , setFilter] = useState('');
 
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState(null);
 
   const nameInputChange = (e) => {
     setNewName(e.target.value);
