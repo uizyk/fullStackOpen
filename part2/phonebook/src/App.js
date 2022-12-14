@@ -4,6 +4,7 @@ import Person from './components/Person'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
 import Communication from './components/Communication'
+import Notification from './components/Notification'
 
 const App = () => {
 
@@ -15,6 +16,8 @@ const App = () => {
 
   const [filter , setFilter] = useState('');
 
+  const [message, setMessage] = useState('');
+
   const nameInputChange = (e) => {
     setNewName(e.target.value);
   } 
@@ -25,6 +28,13 @@ const App = () => {
 
   const filterInputChange = (e) => {
     setFilter(e.target.value);
+  }
+
+  const notification = (addedName) => {
+    setMessage(`Added ${addedName}`);
+    setTimeout(() => {
+      setMessage(null);
+    }, 3000);
   }
 
 
@@ -57,6 +67,7 @@ const App = () => {
             setPersons(response.data)
           })
         })
+        notification(nameObj.name);
       }
     } 
     else
@@ -67,7 +78,8 @@ const App = () => {
       setNewName('');
       setNewNumber('');
       Communication
-        .create(nameObj)
+        .create(nameObj);
+      notification(nameObj.name);
     }
   }
 
@@ -83,21 +95,22 @@ const App = () => {
   
   // Delete person
 
-    const deletePerson = (person) => {
-      if (window.confirm(`Do you really want to delete ${person.name}?`)){
-        Communication
-          .deletePerson(person.id)
-          .then((response) => {
-            Communication.getAll().then(response => {
-              setPersons(response.data)
-            })
+  const deletePerson = (person) => {
+    if (window.confirm(`Do you really want to delete ${person.name}?`)){
+      Communication
+        .deletePerson(person.id)
+        .then((response) => {
+          Communication.getAll().then(response => {
+            setPersons(response.data)
           })
+        })
     }
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message}/>
       <Filter 
         filter={filter}
         filterInput={filterInputChange}
