@@ -27,8 +27,9 @@ const App = () => {
     setFilter(e.target.value);
   }
 
+
   const filtered = !filter
-    ? persons
+    ? Array.from(persons)
     : persons.filter((person) => 
       person.name.toLowerCase().includes(filter.toLowerCase())
     );
@@ -43,13 +44,22 @@ const App = () => {
     if (existingName.includes(newName))
     {
       if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
+
+        let person = persons.find(person => person.name === newName);
+        let personId = person.id;
+        nameObj.name = newName;
+        nameObj.number = newNumber;
+
         Communication
-          .update(nameObj.name, nameObj)
-          .then(response => {
+        .update(personId, nameObj)
+        .then((response) => {
+          Communication.getAll().then(response => {
             setPersons(response.data)
           })
+        })
       }
-    } else
+    } 
+    else
     {
       nameObj.name = newName;
       nameObj.number = newNumber;
@@ -63,7 +73,6 @@ const App = () => {
 
   // fetch and set data from json
   useEffect(() => {
-
     Communication
       .getAll()
       .then(response => {
@@ -78,14 +87,13 @@ const App = () => {
       if (window.confirm(`Do you really want to delete ${person.name}?`)){
         Communication
           .deletePerson(person.id)
-          .then(response => {
+          .then((response) => {
             Communication.getAll().then(response => {
               setPersons(response.data)
             })
-            })
+          })
     }
   }
-
 
   return (
     <div>
