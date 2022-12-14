@@ -31,7 +31,7 @@ const App = () => {
   }
 
   const notification = (addedName) => {
-    setMessage(`Added ${addedName}`);
+    setMessage({message:`Added ${addedName}`, type:'notification'});
     setTimeout(() => {
       setMessage(null);
     }, 3000);
@@ -63,11 +63,24 @@ const App = () => {
         Communication
         .update(personId, nameObj)
         .then((response) => {
-          Communication.getAll().then(response => {
-            setPersons(response.data)
-          })
+          Communication
+            .getAll()
+            .then(response => {
+              setPersons(response.data)
+              notification(nameObj.name);
+            })
         })
-        notification(nameObj.name);
+        .catch(error => {
+          setMessage({message:`Information of ${nameObj.name} has already been removed from the server`, type: 'error'})
+          Communication
+            .getAll()
+            .then(response => {
+              setPersons(response.data);
+            })
+        });
+        setTimeout(() => {
+          setMessage(null);
+        }, 3000);
       }
     } 
     else
@@ -78,7 +91,13 @@ const App = () => {
       setNewName('');
       setNewNumber('');
       Communication
-        .create(nameObj);
+        .create(nameObj)
+        .then(response => {
+          Communication.getAll()
+          .then(response => {
+            setPersons(response.data);
+          })
+        });
       notification(nameObj.name);
     }
   }

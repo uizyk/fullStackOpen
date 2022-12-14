@@ -4,10 +4,10 @@ const Notification = ({message}) => {
     if(message === null){
         return null
     } 
-    else {
+    else {     
         return(
-            <p className = 'notification'>
-                {message}
+            <p className = {message.type === 'notification' ? 'notification' : 'error'}>
+                {message.message}
             </p>
         )
     }
