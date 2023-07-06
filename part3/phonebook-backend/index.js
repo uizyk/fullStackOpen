@@ -33,9 +33,11 @@ app.get('/', (request, response) => {
 
 app.get('/info', (request, response) => {
   numOfPeople = persons.length;
+  const currentDate = new Date();
+
   response.send(
     `<p>Phonebook has info for ${numOfPeople} people</p>
-    <p></p>
+    <p>${currentDate}</p>
     `
     );
   })
@@ -56,15 +58,21 @@ app.get('/api/persons/:id', (request, response) => {
   }
 })
 
+app.post('/api/persons', (request, response) => {
+  const id = Math.floor(Math.random() * 1000);
+  
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  persons = persons.filter(person => person.id !== id)
+
+  response.status(204).end()
+})
+
 app.get('/api/persons', (request, response) => {
   response.json(persons)
 })
-
-// app.delete('/api/persons/:id', (request, response) => {
-//   const id = Number(request.params.id);
-//   persons = persons.filter(person => person.id !== id)
-//   response.status(204).end();
-// });
 
 const PORT = 3001
 app.listen(PORT, () => {
