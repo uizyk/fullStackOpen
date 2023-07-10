@@ -2,8 +2,10 @@ const express = require('express');
 const morgan = require('morgan');
 const app = express();
 const fs = require('fs');
+const cors = require('cors');
 
 app.use(express.json());
+app.use(cors());
 
 // Define a custom log format
 morgan.token('postData', (req) => {
@@ -68,6 +70,9 @@ app.post('/api/persons', (request, response) => {
   persons.push(newPerson);
 
   response.status(201).json(newPerson);
+
+  // Update the JSON file with formatted data
+  updatePersonsJSON(persons);
 });
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -76,15 +81,8 @@ app.delete('/api/persons/:id', (request, response) => {
 
   response.status(204).end();
 
-  // Code below is to update the JSON file with the new list of persons and not just store in memory
-  fs.writeFile('./persons.json', JSON.stringify(persons), (err) => {
-    if (err) {
-      console.log('Error writing file', err);
-      response.status(500).end();
-    } else {
-      console.log('Successfully deleted person');
-    }
-  });
+  // Update the JSON file with formatted data
+  updatePersonsJSON(persons);
 });
 
 app.get('/api/persons', (request, response) => {
@@ -95,3 +93,15 @@ const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// Function to update the JSON file with formatted data
+function updatePersonsJSON(persons) {
+  const jsonContent = JSON.stringify(persons, null, 2); // Use null for default indent (2 spaces)
+  fs.writeFile('./persons.json', jsonContent, (err) => {
+    if (err) {
+      console.log('Error writing file', err);
+    } else {
+      console.log('Successfully updated persons JSON file');
+    }
+  });
+}
