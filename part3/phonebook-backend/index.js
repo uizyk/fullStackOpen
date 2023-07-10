@@ -1,80 +1,97 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+const morgan = require('morgan');
+const app = express();
+const fs = require('fs');
 
-app.use(express.json())
+app.use(express.json());
 
-let persons = [
-    { 
-        "id": 1,
-        "name": "Arto Hellas", 
-        "number": "040-123456"
-    },
-    { 
-        "id": 2,
-        "name": "Ada Lovelace", 
-        "number": "39-44-5323523"
-    },
-    { 
-        "id": 3,
-        "name": "Dan Abramov", 
-        "number": "12-43-234345"
-    },
-    { 
-        "id": 4,
-        "name": "Mary Poppendieck", 
-        "number": "39-23-6423122"
-    }
-]
+// Define a custom log format
+morgan.token('postData', (req) => {
+  if (req.method === 'POST') {
+    return JSON.stringify(req.body);
+  }
+  return '-';
+});
 
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postData'));
+
+let persons = require('./persons.json');
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello World</h1>');
 });
 
 app.get('/info', (request, response) => {
-  numOfPeople = persons.length;
+  const numOfPeople = persons.length;
   const currentDate = new Date();
-
+  
   response.send(
     `<p>Phonebook has info for ${numOfPeople} people</p>
     <p>${currentDate}</p>
     `
-    );
-  })
-
-
-  // app.post('/info', (request, response) => {
-  //   const info = request.body
-  //   response.send(<p>hello</p>)
-  // })
+  );
+});
 
 app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = persons.find(person => person.id === id)
-  if(person){
-    response.json(person)
+  const id = Number(request.params.id);
+  const person = persons.find(person => person.id === id);
+  if (person) {
+    response.json(person);
   } else {
     response.status(404).end();
   }
-})
+});
 
 app.post('/api/persons', (request, response) => {
   const id = Math.floor(Math.random() * 1000);
+  const body = request.body;
   
-})
+  if (!body.number || !body.name) {
+    return response.status(400).json({
+      error: 'number or name is missing'
+    });
+  } 
+  
+  const existingPerson = persons.find(person => person.name === body.name);
+  if (existingPerson) {
+    return response.status(400).json({
+      error: 'name already exists in the phonebook'
+    });
+  }
+  
+  const newPerson = {
+    id: id,
+    name: body.name,
+    number: body.number
+  };
+  
+  persons.push(newPerson);
+
+  response.status(201).json(newPerson);
+});
 
 app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(person => person.id !== id)
+  const id = Number(request.params.id);
+  persons = persons.filter(person => person.id !== id);
 
-  response.status(204).end()
-})
+  response.status(204).end();
+
+  // Code below is to update the JSON file with the new list of persons and not just store in memory
+  fs.writeFile('./persons.json', JSON.stringify(persons), (err) => {
+    if (err) {
+      console.log('Error writing file', err);
+      response.status(500).end();
+    } else {
+      console.log('Successfully deleted person');
+    }
+  });
+});
 
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
-})
+  response.json(persons);
+});
 
-const PORT = 3001
+const PORT = 3001;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+  console.log(`Server running on port ${PORT}`);
+});
