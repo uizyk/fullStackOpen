@@ -6,7 +6,7 @@ const cors = require('cors');
 
 app.use(express.json());
 app.use(cors());
-
+app.use(express.static('build'));
 // Define a custom log format
 morgan.token('postData', (req) => {
   if (req.method === 'POST') {
