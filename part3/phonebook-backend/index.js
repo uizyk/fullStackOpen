@@ -89,11 +89,6 @@ app.get('/api/persons', (request, response) => {
   response.json(persons);
 });
 
-const PORT = 3001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
 // Function to update the JSON file with formatted data
 function updatePersonsJSON(persons) {
   const jsonContent = JSON.stringify(persons, null, 2); // Use null for default indent (2 spaces)
