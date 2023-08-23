@@ -21,11 +21,24 @@ const personSchema = new mongoose.Schema({
 const Person = mongoose.model('Person', personSchema, 'persons');
 
 const person = new Person({
-    name: 'Save test',
-    number: '123-456-7890',
+    name: process.argv[3],
+    number: process.argv[4],
 })
 
-person.save().then(result => {
-    console.log('person saved!');
-    mongoose.connection.close();
-})
+//// Save a person
+if(process.argv.length > 3) {
+    person.save().then(result => {
+        console.log(`added ${person.name} number ${person.number} to phonebook`);
+        mongoose.connection.close();
+    })
+}
+
+//// Find all persons
+if(process.argv.length === 3) {
+        Person.find({}).then(result => {
+            result.forEach(person => {
+                console.log(person)
+            })
+            mongoose.connection.close();
+        })
+}

@@ -1,13 +1,17 @@
+require('dotenv').config();
+
 const express = require('express');
 const morgan = require('morgan');
 const app = express();
 const fs = require('fs');
 const cors = require('cors');
-// const mongoose = require('./mongo.js'); // Import mongoose from mongo.js
+const mongoose = require('mongoose');
+const Person = require('./models/person');
 
 app.use(express.json());
 app.use(cors());
 app.use(express.static('build'));
+
 // Define a custom log format
 morgan.token('postData', (req) => {
   if (req.method === 'POST') {
@@ -18,72 +22,74 @@ morgan.token('postData', (req) => {
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postData'));
 
-let persons = require('./persons.json');
-
 app.get('/', (request, response) => {
-  response.send('<h1>Hello World</h1>');
-});
-
-app.get('/info', (request, response) => {
-  const numOfPeople = persons.length;
-  const currentDate = new Date();
-  
-  response.send(
-    `<p>Phonebook has info for ${numOfPeople} people</p>
-    <p>${currentDate}</p>
-    `
-  );
-});
-
-app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find(person => person.id === id);
-  if (person) {
+  Person.find({}).then(person => {
     response.json(person);
-  } else {
-    response.status(404).end();
-  }
+  })
+});
+
+app.get('/api/persons/', (request, response) => {
+  Person.find({}).then(person => {
+    response.json(person);
+  })
 });
 
 app.post('/api/persons', (request, response) => {
-  const id = Math.floor(Math.random() * 1000);
   const body = request.body;
-  
+
   if (!body.number || !body.name) {
     return response.status(400).json({
       error: 'number or name is missing'
     });
-  } 
-  
-  const existingPerson = persons.find(person => person.name === body.name);
-  if (existingPerson) {
-    return response.status(400).json({
-      error: 'name already exists in the phonebook'
-    });
   }
-  
-  const newPerson = {
-    id: id,
-    name: body.name,
-    number: body.number
-  };
-  
-  persons.push(newPerson);
 
-  response.status(201).json(newPerson);
+  // Use Mongoose to check if a person with the same name exists
+  Person.findOne({ name: body.name })
+    .then(existingPerson => {
+      if (existingPerson) {
+        return response.status(400).json({
+          error: 'name already exists in the phonebook'
+        });
+      }
 
-  // Update the JSON file with formatted data
-  updatePersonsJSON(persons);
+      // If the person does not exist, create and save the new person
+      const person = new Person({
+        name: body.name,
+        number: body.number,
+      });
+
+      person.save()
+        .then(savedPerson => {
+          return response.json(savedPerson);
+        })
+        .catch(error => {
+          console.error('Error saving person:', error);
+          return response.status(500).json({ error: 'Internal server error' });
+        });
+    })
+    .catch(error => {
+      console.error('Error checking for existing person:', error);
+      return response.status(500).json({ error: 'Internal server error' });
+    });
 });
 
+
 app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id);
-  persons = persons.filter(person => person.id !== id);
+  const id = request.params.id;
 
-  response.status(204).end();
-
-  // Update the JSON file with formatted data
-  updatePersonsJSON(persons);
+  // Use Mongoose to find and remove the person by ID
+  Person.findByIdAndRemove(id)
+    .then(deletedPerson => {
+      if (deletedPerson) {
+        response.status(204).end(); // Person found and deleted
+      } else {
+        response.status(404).json({ error: 'Person not found' }); // Person not found
+      }
+    })
+    .catch(error => {
+      console.error('Error deleting person:', error);
+      response.status(500).json({ error: 'Internal server error' });
+    });
 });
 
 app.get('/api/persons', (request, response) => {
