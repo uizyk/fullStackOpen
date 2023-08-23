@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const app = express();
 const fs = require('fs');
 const cors = require('cors');
+// const mongoose = require('./mongo.js'); // Import mongoose from mongo.js
 
 app.use(express.json());
 app.use(cors());

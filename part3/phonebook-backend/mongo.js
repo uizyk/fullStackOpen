@@ -7,14 +7,14 @@ if (process.argv.length<3) {
 
 const password = process.argv[2];
 
-const url = `mongodb+srv://uizykim:${password}@cluster0.fql5qxj.mongodb.net/?retryWrites=true&w=majority`;
+const url = `mongodb+srv://uizykim:${password}@cluster0.idegc5r.mongodb.net/?retryWrites=true&w=majority`;
 
 mongoose.set('strictQuery', false);
 mongoose.connect(url);
 
-const phoneSchema = new mongoose.Schema({
+const personSchema = new mongoose.Schema({
     content: String,
     important: Boolean,
 })
 
-const Person = mongoose.model('Person', phoneSchema)
+const Person = mongoose.model('Person', personSchema)
