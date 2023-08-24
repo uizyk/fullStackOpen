@@ -34,7 +34,18 @@ app.get('/api/persons/', (request, response) => {
   })
 });
 
-app.post('/api/persons', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
+  Person.findById(request.params.id).then(person => {
+    if (person) {
+      response.json(person);
+    } else {
+      response.status(404).end();
+    }
+  })
+    .catch(error => next(error));
+});
+
+app.post('/api/persons', (request, response, next) => {
   const body = request.body;
 
   if (!body.number || !body.name) {
@@ -43,16 +54,6 @@ app.post('/api/persons', (request, response) => {
     });
   }
 
-  // Use Mongoose to check if a person with the same name exists
-  Person.findOne({ name: body.name })
-    .then(existingPerson => {
-      if (existingPerson) {
-        return response.status(400).json({
-          error: 'name already exists in the phonebook'
-        });
-      }
-
-      // If the person does not exist, create and save the new person
       const person = new Person({
         name: body.name,
         number: body.number,
@@ -62,19 +63,30 @@ app.post('/api/persons', (request, response) => {
         .then(savedPerson => {
           return response.json(savedPerson);
         })
-        .catch(error => {
-          console.error('Error saving person:', error);
-          return response.status(500).json({ error: 'Internal server error' });
-        });
+        .catch(error => 
+          next(error));
+    });
+
+app.put('/api/persons/:id', (request, response, next) => {
+  body = request.body;
+  
+  const person = {
+    name: body.name,
+    number: body.number,
+  }
+
+  Person.findByIdAndUpdate(request.params.id, person, {new: true})
+    .then(updatedPerson => {
+      response.json(updatedPerson);
     })
     .catch(error => {
-      console.error('Error checking for existing person:', error);
-      return response.status(500).json({ error: 'Internal server error' });
+      next(error)
     });
+
 });
 
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   const id = request.params.id;
 
   // Use Mongoose to find and remove the person by ID
@@ -86,27 +98,31 @@ app.delete('/api/persons/:id', (request, response) => {
         response.status(404).json({ error: 'Person not found' }); // Person not found
       }
     })
-    .catch(error => {
-      console.error('Error deleting person:', error);
-      response.status(500).json({ error: 'Internal server error' });
-    });
+    .catch(error => next(error));
 });
 
 app.get('/api/persons', (request, response) => {
   response.json(persons);
 });
 
-// Function to update the JSON file with formatted data
-function updatePersonsJSON(persons) {
-  const jsonContent = JSON.stringify(persons, null, 2); // Use null for default indent (2 spaces)
-  fs.writeFile('./persons.json', jsonContent, (err) => {
-    if (err) {
-      console.log('Error writing file', err);
-    } else {
-      console.log('Successfully updated persons JSON file');
-    }
-  });
+// Error handling middleware
+function errorHandler(err, req, res, next) {
+  console.error(err); // Log the error for debugging purposes
+
+  if (err.name === 'ValidationError') {
+    return res.status(400).json({ error: err.message }); // Handle Mongoose validation errors
+  }
+
+  if (err.name === 'CastError') {
+    return res.status(400).json({ error: 'Malformatted id' }); // Handle invalid ObjectId errors
+  }
+
+  // Handle other errors
+  return res.status(500).json({ error: 'Internal server error' });
 }
+
+app.use(errorHandler); // This has to be the last loaded middleware
+
 
 
 const PORT = process.env.PORT || 3001
