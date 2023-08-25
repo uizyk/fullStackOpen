@@ -2,15 +2,17 @@
 .notification {
     color: green;
     border: 1px solid green;
+    font-size: 1.2em;
     padding: 7px;
     width: 100%;
-    background-color: gray;
+    background-color: rgba(237, 231, 225, 0.6);
 }
 
 .error {
     color: red;
     border: 1px solid red;
+    font-size: 1.2em;
     padding: 7px;
     width: 100%;
-    background-color: gray;
+    background-color: rgba(237, 231, 225, 0.6);
 }

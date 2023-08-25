@@ -45,12 +45,43 @@ const App = () => {
     );
   
   const addName = (e) => {
+    let errorMessage = '';
+
+    if (newName === '' && newNumber === '') {
+      errorMessage += 'Name and Phone number are required.\n';
+    } else {
+      if (newName === '') {
+        errorMessage += 'Name is required.\n';
+      }
+  
+      if (newNumber === '') {
+        errorMessage += 'Phone number is required.\n';
+      }
+  
+      if (newName !== '' && newName.length < 3) {
+        errorMessage += 'Name must be at least 3 characters long.\n';
+      }
+  
+      if (newNumber !== '' && newNumber.length < 8) {
+        errorMessage += 'Phone number must be at least 8 digits long.\n';
+      }
+    }
+  
+    if (errorMessage !== '') {
+      setMessage({message: errorMessage.trim(), type: 'error'});
+      e.preventDefault();
+      return; // Don't proceed with further logic if there are errors.
+    }
+
     const existingName = persons.map(person => person.name);
     e.preventDefault();
     const nameObj = {
       name: '',
       number: ''
     }
+    
+
+
     if (existingName.includes(newName))
     {
       if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
