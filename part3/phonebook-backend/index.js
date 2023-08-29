@@ -115,6 +115,8 @@ function errorHandler(err, req, res, next) {
 
   if (err.name === 'CastError') {
     return res.status(400).json({ error: 'Malformatted id' }); // Handle invalid ObjectId errors
+  } else if (err.name === 'ValidationError') {
+    return res.status(400).json({ error: err.message})
   }
 
   // Handle other errors
