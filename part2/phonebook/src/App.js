@@ -45,33 +45,33 @@ const App = () => {
     );
   
   const addName = (e) => {
-    let errorMessage = '';
+    // let errorMessage = '';
 
-    if (newName === '' && newNumber === '') {
-      errorMessage += 'Name and Phone number are required.\n';
-    } else {
-      if (newName === '') {
-        errorMessage += 'Name is required.\n';
-      }
+    // if (newName === '' && newNumber === '') {
+    //   errorMessage += 'Name and Phone number are required.\n';
+    // } else {
+    //   if (newName === '') {
+    //     errorMessage += 'Name is required.\n';
+    //   }
   
-      if (newNumber === '') {
-        errorMessage += 'Phone number is required.\n';
-      }
+    //   if (newNumber === '') {
+    //     errorMessage += 'Phone number is required.\n';
+    //   }
   
-      if (newName !== '' && newName.length < 3) {
-        errorMessage += 'Name must be at least 3 characters long.\n';
-      }
+    //   if (newName !== '' && newName.length < 3) {
+    //     errorMessage += 'Name must be at least 3 characters long.\n';
+    //   }
   
-      if (newNumber !== '' && newNumber.length < 8) {
-        errorMessage += 'Phone number must be at least 8 digits long.\n';
-      }
-    }
+    //   if (newNumber !== '' && newNumber.length < 8) {
+    //     errorMessage += 'Phone number must be at least 8 digits long.\n';
+    //   }
+    // }
   
-    if (errorMessage !== '') {
-      setMessage({message: errorMessage.trim(), type: 'error'});
-      e.preventDefault();
-      return; // Don't proceed with further logic if there are errors.
-    }
+    // if (errorMessage !== '') {
+    //   setMessage({message: errorMessage.trim(), type: 'error'});
+    //   e.preventDefault();
+    //   return; // Don't proceed with further logic if there are errors.
+    // }
 
     const existingName = persons.map(person => person.name);
     e.preventDefault();
@@ -118,18 +118,22 @@ const App = () => {
     {
       nameObj.name = newName;
       nameObj.number = newNumber;
-      setPersons(persons.concat(nameObj));
-      setNewName('');
-      setNewNumber('');
       Communication
-        .create(nameObj)
+      .create(nameObj)
+      .then(response => {
+        Communication.getAll()
         .then(response => {
-          Communication.getAll()
-          .then(response => {
-            setPersons(response.data);
-          })
+          notification(nameObj.name);
         });
-      notification(nameObj.name);
+      })
+      .catch(error => {
+        setMessage({message: error.response.data.error, type: 'error'});
+      })
+      .finally(() => {
+        Communication.getAll().then((response) => {
+          setPersons(response.data);
+        });
+      })
     }
   }
 
