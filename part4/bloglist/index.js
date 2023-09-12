@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-
+const Blog = require('./models/blog')
 
 app.use(cors())
 app.use(express.json())
@@ -21,6 +21,10 @@ blog
     .save()
     .then(result => {
         response.status(201).json(result)
+        console.log(body.title, 'saved!')
+    })
+    .catch(error => {
+        response.status(400).json(error)
     })
 })
 

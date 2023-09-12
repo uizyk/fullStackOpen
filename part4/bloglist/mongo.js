@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Blog = require ('./models/blog');
 
 if (process.argv.length < 3) {
   console.log('give password as argument');
@@ -12,15 +13,6 @@ const mongoUrl = `mongodb+srv://uizykim:${password}@cluster0.5bn1ycq.mongodb.net
 
 mongoose.set('strictQuery', false);
 mongoose.connect(mongoUrl);
-
-const blogSchema = new mongoose.Schema({
-    title: String,
-    author: String,
-    url: String,
-    likes: Number
-})
-
-const Blog = mongoose.model('Blog', blogSchema)
 
 
 const blog = new Blog({
