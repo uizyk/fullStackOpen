@@ -68,3 +68,12 @@ describe('most blogs', () => {
         expect(listHelper.mostBlogs(blogTwo)).toEqual({author: "Author B", blogs: 2});
     });
 });
+
+describe('most likes', () => {
+    test('blog1 most likes', () => {
+        expect(listHelper.mostLikes(blogOne)).toEqual({author: "Author A", likes: 6});
+    });
+    test('blog2 most likes', () => {
+        expect(listHelper.mostLikes(blogTwo)).toEqual({author: "Author B", likes: 13});
+    });
+});
